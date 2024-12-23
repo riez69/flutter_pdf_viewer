@@ -1,13 +1,17 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import the services package
+import 'package:file_picker/file_picker.dart';
+import 'function.dart';
 
 void main() {
   // Ensure the Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Set the app to fullscreen mode
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
-  
+  //SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+
   runApp(const MyApp());
 }
 
@@ -37,12 +41,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+    requestPermissions(); // Meminta izin saat aplikasi dibuka
+    print(findAllPdfFiles());
   }
 
   @override
@@ -56,18 +59,39 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Expanded(
+                child: FutureBuilder(
+                    future: findAllPdfFiles(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<String>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text(snapshot.error.toString()));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Center(
+                            child: Text('Tidak ada file PDF yang ditemukan.'));
+                      } else {
+                        List<String> _pdffiles = snapshot.data!;
+                        ListView.builder(
+                            itemCount: _pdffiles.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(_pdffiles[index]),
+                              );
+                            });
+                      }
+                      return Container();
+                    }))
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        onPressed: () async {
+          await pickPdfFile(context: context); // Call the async function
+        },
+        tooltip: 'cari file pdf',
+        child: const Icon(Icons.search),
       ),
     );
   }
