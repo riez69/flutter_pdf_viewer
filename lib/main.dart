@@ -7,6 +7,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:pdf_thumbnail/pdf_thumbnail.dart';
 import 'package:pdf_viewer/pdfviewpage.dart';
 import 'function.dart';
+import 'package:android_intent/android_intent.dart';
+import 'package:android_intent/flag.dart';
 
 void main() {
   // Ensure the Flutter binding is initialized
@@ -90,18 +92,83 @@ class _MyHomePageState extends State<MyHomePage> {
                               _pdffiles[index].createdTime.toString();
                           int _lastIndex = _pdfPath.split("/").length - 1;
 
-                          return ListTile(
-                            title: Text(_pdffiles[index]
-                                .path
-                                .split("/")[_lastIndex]
-                                .toString()),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PdfViewPage(filePath: _pdfPath)));
-                            },
+                          return Container(
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white, // Warna latar belakang
+                              borderRadius:
+                                  BorderRadius.circular(10), // Sudut melengkung
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey
+                                      .withOpacity(0.5), // Warna bayangan
+                                  spreadRadius: 2, // Jarak bayangan
+                                  blurRadius: 5, // Kelembutan bayangan
+                                  offset: Offset(0, 3), // Posisi bayangan
+                                ),
+                              ],
+                            ),
+                            child: ListTile(
+                              title: Text(_pdffiles[index]
+                                  .path
+                                  .split("/")[_lastIndex]
+                                  .toString()),
+                              subtitle: Text(_pdfCreateTime),
+                              leading: SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: FutureBuilder(
+                                    future: getImage(_pdfPath),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
+                                      } else if (snapshot.hasError) {
+                                        return Center(
+                                            child: Text(
+                                                snapshot.error.toString()));
+                                      } else {
+                                        Center(
+                                            child: Image.memory(
+                                                snapshot.data!.bytes));
+                                      }
+                                      return Container(
+                                          padding: EdgeInsets.all(1.0),
+                                          decoration: BoxDecoration(
+                                            color: const Color.fromARGB(
+                                                255,
+                                                124,
+                                                124,
+                                                124), // Warna latar belakang untuk leading
+                                            borderRadius: BorderRadius.circular(
+                                                8), // Sudut melengkung
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey.withOpacity(
+                                                    0.3), // Warna bayangan untuk leading
+                                                spreadRadius:
+                                                    1, // Jarak bayangan
+                                                blurRadius:
+                                                    3, // Kelembutan bayangan
+                                                offset: Offset(
+                                                    0, 2), // Posisi bayangan
+                                              ),
+                                            ],
+                                          ),
+                                          child: Image.memory(
+                                              snapshot.data!.bytes));
+                                    }),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            PdfViewPage(filePath: _pdfPath)));
+                              },
+                            ),
                           );
                         },
                       ),
@@ -119,21 +186,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               },
             )),
-            FutureBuilder(
-                future: getImage(
-                  "/storage/emulated/0/Download/all_lampiran_pengumuman_pembukaan_pengadaan_cpns_kalsel_ta_2024_sign.pdf"
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text(snapshot.error.toString()));
-                  
-                  } else {
-                    Center(child: PdfThumbnail.fromFile("/storage/emulated/0/Download/all_lampiran_pengumuman_pembukaan_pengadaan_cpns_kalsel_ta_2024_sign.pdf", currentPage: 1));
-                  }
-                  return Text('dataa');
-                })
           ],
         ),
       ),
