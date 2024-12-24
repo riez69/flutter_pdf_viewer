@@ -1,14 +1,9 @@
-import 'dart:ffi';
-import 'dart:io';
+// ignore_for_file: no_leading_underscores_for_local_identifiers
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import the services package
-import 'package:file_picker/file_picker.dart';
-import 'package:pdf_thumbnail/pdf_thumbnail.dart';
 import 'package:pdf_viewer/pdfviewpage.dart';
 import 'function.dart';
-import 'package:android_intent/android_intent.dart';
-import 'package:android_intent/flag.dart';
 
 void main() {
   // Ensure the Flutter binding is initialized
@@ -26,12 +21,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'PDF Viewer',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 24, 16, 37)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'PDF Viewer'),
     );
   }
 }
@@ -47,6 +43,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _displayedFileCount = 10; // Jumlah file yang ditampilkan
+
   @override
   void initState() {
     super.initState();
@@ -93,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           int _lastIndex = _pdfPath.split("/").length - 1;
 
                           return Container(
-                            margin: EdgeInsets.symmetric(
+                            margin: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
                             decoration: BoxDecoration(
                               color: Colors.white, // Warna latar belakang
@@ -105,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       .withOpacity(0.5), // Warna bayangan
                                   spreadRadius: 2, // Jarak bayangan
                                   blurRadius: 5, // Kelembutan bayangan
-                                  offset: Offset(0, 3), // Posisi bayangan
+                                  offset: const Offset(0, 3), // Posisi bayangan
                                 ),
                               ],
                             ),
@@ -135,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 snapshot.data!.bytes));
                                       }
                                       return Container(
-                                          padding: EdgeInsets.all(1.0),
+                                          padding: const EdgeInsets.all(1.0),
                                           decoration: BoxDecoration(
                                             color: const Color.fromARGB(
                                                 255,
@@ -152,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     1, // Jarak bayangan
                                                 blurRadius:
                                                     3, // Kelembutan bayangan
-                                                offset: Offset(
+                                                offset: const Offset(
                                                     0, 2), // Posisi bayangan
                                               ),
                                             ],
@@ -175,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     if (_displayedFiles.length < _pdffiles.length)
                       TextButton(
-                        child: Text("Selengkapnya"),
+                        child: const Text("Selengkapnya"),
                         onPressed: () {
                           setState(() {
                             _displayedFileCount += 10;
