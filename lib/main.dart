@@ -1,8 +1,10 @@
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import the services package
 import 'package:file_picker/file_picker.dart';
+import 'package:pdf_thumbnail/pdf_thumbnail.dart';
 import 'package:pdf_viewer/pdfviewpage.dart';
 import 'function.dart';
 
@@ -112,11 +114,26 @@ class _MyHomePageState extends State<MyHomePage> {
                             _displayedFileCount += 10;
                           });
                         },
-                      )
+                      ),
                   ]);
                 }
               },
-            ))
+            )),
+            FutureBuilder(
+                future: getImage(
+                  "/storage/emulated/0/Download/all_lampiran_pengumuman_pembukaan_pengadaan_cpns_kalsel_ta_2024_sign.pdf"
+                ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text(snapshot.error.toString()));
+                  
+                  } else {
+                    Center(child: PdfThumbnail.fromFile("/storage/emulated/0/Download/all_lampiran_pengumuman_pembukaan_pengadaan_cpns_kalsel_ta_2024_sign.pdf", currentPage: 1));
+                  }
+                  return Text('dataa');
+                })
           ],
         ),
       ),
